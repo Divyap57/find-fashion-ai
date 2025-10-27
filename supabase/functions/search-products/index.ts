@@ -60,47 +60,28 @@ serve(async (req) => {
     const searchQuery = aiData.choices[0].message.content.trim();
     console.log('AI search query:', searchQuery);
 
-    const FLIPKART_API_KEY = Deno.env.get('FLIPKART_API_KEY');
+    // Step 2: Search products from Amazon
+    console.log('Searching products from Amazon...');
     
-    if (!FLIPKART_API_KEY) {
-      throw new Error('Flipkart API key not configured');
-    }
-
-    // Step 2: Search products from both Amazon and Flipkart in parallel
-    console.log('Searching products from Amazon and Flipkart...');
-    
-    const [amazonResponse, flipkartResponse] = await Promise.allSettled([
-      // Amazon search
-      fetch(
-        `https://real-time-amazon-data.p.rapidapi.com/search?query=${encodeURIComponent(searchQuery)}&page=1&country=US&category_id=aps`,
-        {
-          method: 'GET',
-          headers: {
-            'X-RapidAPI-Key': RAPIDAPI_KEY,
-            'X-RapidAPI-Host': 'real-time-amazon-data.p.rapidapi.com'
-          }
+    const amazonResponse = await fetch(
+      `https://real-time-amazon-data.p.rapidapi.com/search?query=${encodeURIComponent(searchQuery)}&page=1&country=US&category_id=aps`,
+      {
+        method: 'GET',
+        headers: {
+          'X-RapidAPI-Key': RAPIDAPI_KEY,
+          'X-RapidAPI-Host': 'real-time-amazon-data.p.rapidapi.com'
         }
-      ),
-      // Flipkart search
-      fetch(
-        `https://flipkart-api-eosin.vercel.app/product/${encodeURIComponent(searchQuery)}`,
-        {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${FLIPKART_API_KEY}`
-          }
-        }
-      )
-    ]);
+      }
+    );
 
     const products: any[] = [];
 
     // Process Amazon results
-    if (amazonResponse.status === 'fulfilled' && amazonResponse.value.ok) {
-      const amazonData = await amazonResponse.value.json();
+    if (amazonResponse.ok) {
+      const amazonData = await amazonResponse.json();
       console.log('Found Amazon products:', amazonData.data?.products?.length || 0);
       
-      const amazonProducts = (amazonData.data?.products || []).slice(0, 10).map((item: any) => ({
+      const amazonProducts = (amazonData.data?.products || []).slice(0, 20).map((item: any) => ({
         id: `amazon-${item.asin}`,
         title: item.product_title,
         price: item.product_price || 'Price not available',
@@ -113,28 +94,7 @@ serve(async (req) => {
       
       products.push(...amazonProducts);
     } else {
-      console.error('Amazon search failed');
-    }
-
-    // Process Flipkart results
-    if (flipkartResponse.status === 'fulfilled' && flipkartResponse.value.ok) {
-      const flipkartData = await flipkartResponse.value.json();
-      console.log('Found Flipkart products:', flipkartData.result?.length || 0);
-      
-      const flipkartProducts = (flipkartData.result || []).slice(0, 10).map((item: any) => ({
-        id: `flipkart-${item.pid || item.title}`,
-        title: item.title,
-        price: item.current_price || item.price || 'Price not available',
-        image: item.thumbnail || item.image,
-        link: item.link,
-        platform: 'Flipkart',
-        rating: item.rating || 0,
-        reviews: 0
-      }));
-      
-      products.push(...flipkartProducts);
-    } else {
-      console.error('Flipkart search failed');
+      console.error('Amazon search failed:', await amazonResponse.text());
     }
 
     console.log('Total products found:', products.length);
