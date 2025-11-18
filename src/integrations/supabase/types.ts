@@ -14,7 +14,135 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      cart_items: {
+        Row: {
+          added_at: string | null
+          id: string
+          product_id: string
+          product_image: string
+          product_link: string
+          product_name: string
+          product_platform: string
+          product_price: string
+          quantity: number | null
+          user_id: string
+        }
+        Insert: {
+          added_at?: string | null
+          id?: string
+          product_id: string
+          product_image: string
+          product_link: string
+          product_name: string
+          product_platform: string
+          product_price: string
+          quantity?: number | null
+          user_id: string
+        }
+        Update: {
+          added_at?: string | null
+          id?: string
+          product_id?: string
+          product_image?: string
+          product_link?: string
+          product_name?: string
+          product_platform?: string
+          product_price?: string
+          quantity?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      liked_products: {
+        Row: {
+          id: string
+          liked_at: string | null
+          product_id: string
+          product_image: string
+          product_link: string
+          product_name: string
+          product_platform: string
+          product_price: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          liked_at?: string | null
+          product_id: string
+          product_image: string
+          product_link: string
+          product_name: string
+          product_platform: string
+          product_price: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          liked_at?: string | null
+          product_id?: string
+          product_image?: string
+          product_link?: string
+          product_name?: string
+          product_platform?: string
+          product_price?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+        }
+        Relationships: []
+      }
+      search_history: {
+        Row: {
+          id: string
+          image_data: string
+          search_query: string | null
+          searched_at: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          image_data: string
+          search_query?: string | null
+          searched_at?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          image_data?: string
+          search_query?: string | null
+          searched_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
