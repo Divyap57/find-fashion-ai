@@ -1,4 +1,4 @@
-# TagHunt - Visual Fashion Search Platform
+# Find-Fashion-AI- Visual Fashion Search Platform
 
 Find your perfect fashion match by uploading images or taking photos to discover similar products from top e-commerce platforms.
 
